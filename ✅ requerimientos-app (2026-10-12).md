@@ -9,7 +9,7 @@ App Android (React Native) para el equipo de diseño de Tecsup. Muestra el mismo
 
 ## Cómo se ve y funciona
 - **Ingreso (desde v1.1.0):** al abrir sin sesión sale `LoginScreen`: se escribe el correo → el servidor envía un código de 6 dígitos (vence en 15 min) → se escribe en 6 casillas (auto-envía al completar; reenvío tras 60 s; "Cambiar correo"). Si el correo no está registrado la app no lo revela. La sesión (token de 64 hex, 180 días en el servidor) se guarda en AsyncStorage; si el servidor responde 401 se vuelve al ingreso. Personas y correos se gestionan en el `/admin` de la web.
-- **Tablero** (pantalla inicial): lista de requerimientos agrupada por mes de registro (los 2 meses más recientes abiertos, el resto colapsado). Cada fila: pill de estado, descripción, chips (unidad azul · tipo gris), avatar del solicitante, conteo de enlaces/adjunto, y fecha de entrega con color por urgencia + texto relativo ("en 3 días", "venció ayer"). Barra de filtros arriba: buscador (descripción/unidad/solicitante/tipo/comentario) + chips de estado. Deslizar hacia abajo para refrescar.
+- **Tablero** (pantalla inicial): lista de requerimientos agrupada por mes de entrega (los 2 meses más recientes abiertos, el resto colapsado). Cada fila: pill de estado, descripción, chips (unidad azul · tipo gris), avatar del solicitante, conteo de enlaces/adjunto, y fecha de entrega con color por urgencia + texto relativo ("en 3 días", "venció ayer"). Barra de filtros arriba: buscador (descripción/unidad/solicitante/tipo/comentario) + chips de estado. Deslizar hacia abajo para refrescar.
 - **Detalle**: se abre al tocar una fila (o al tocar la notificación push). Todos los campos del requerimiento: estado, descripción, unidad, tipo, solicitante, fecha de entrega con urgencia, fecha de registro, comentario, enlaces de apoyo (referencia/recursos/carpeta/descarga) que abren en el navegador, y el archivo adjunto (abre `reqdiseno.com/api/adjuntos/...`).
 - **Ajustes** (ícono de engranaje en la cabecera): sesión iniciada (nombre + correo) con **Cerrar sesión** (da de baja el teléfono del push, revoca el token en el servidor y vuelve al ingreso), interruptor de avisos push (registra/da de baja el token FCM en el backend), botón "Buscar actualización", enlace a `reqdiseno.com`, número de versión.
 - **Notificación push**: al registrarse un requerimiento, el Worker manda un FCM **solo a los teléfonos de la persona asignada** (cada teléfono se liga a la persona al ingresar). Título "Nuevo requerimiento · <solicitante>", cuerpo con descripción + entrega. Tocarla abre el detalle de ese requerimiento (usa `data.url` = id).
@@ -46,7 +46,7 @@ Diseño: adaptación móvil del lenguaje visual de la web (azul `#0073ea`, fondo
     │   │   ├── constantes.ts       ESTADOS + colores (copiados de la web)
     │   │   ├── tipos.ts            interface Pedido
     │   │   ├── formato.ts          fechas en Perú (offset fijo -5h) · urgencia · relativo · meses · iniciales
-    │   │   ├── agrupar.ts          agrupa pedidos por mes de registro (misma lógica que la web)
+    │   │   ├── agrupar.ts          agrupa pedidos por mes de entrega (misma lógica que la web)
     │   │   ├── novedades.ts        changelog para el usuario final por versión + novedadesDesde()
     │   │   └── theme.ts            tokens visuales (T) y radios (R)
     │   ├── api/acceso.ts (pedirCodigo · verificarCodigo · cerrarSesionServidor) · api/pedidos.ts          GET /api/pedidos · GET /api/pedidos/[id] · urlAdjunto()
@@ -105,7 +105,7 @@ Ninguna en el cliente. El keystore de firma y su contraseña viven en `secretos/
 
 ## Estado
 **PROYECTO CERRADO AL 100% (2026-09-10).** Funcional: sí | En producción: sí (APK directo al equipo) | Verificado en dispositivo real por el usuario, incluida la **auto-actualización** (v1.0.0 → v1.0.1 llegó sola tras hacer el repo público). Sin pendientes.
-`v1.0.2` publicada y verificada (2026-09-11): ícono recoloreado a `#003AC1`. **`v1.1.0` publicada y verificada por el usuario (2026-09-26):** ingreso por código, lista por persona y push por persona. `tsc --noEmit` y `eslint` limpios. Pendiente menor: el correo de Claudett en el `/admin` de la web (sin él no puede ingresar).
+`v1.0.2` publicada y verificada (2026-09-11): ícono recoloreado a `#003AC1`. **`v1.1.0` publicada y verificada por el usuario (2026-09-26):** ingreso por código, lista por persona y push por persona. `tsc --noEmit` y `eslint` limpios. **`v1.1.1` publicada y verificada por el usuario (2026-10-12):** tablero agrupado por mes de entrega. Pendiente menor: el correo de Claudett en el `/admin` de la web (sin él no puede ingresar).
 
 ## Integraciones externas
 - **API del Worker de `reqdiseno.com`** — `POST /api/app/{codigo,verificar,salir}` (ingreso), `GET /api/pedidos` y `GET /api/pedidos/[id]` (Bearer, solo lo de la persona), `POST /api/fcm/registrar` (Bearer) y `/baja`, `GET /api/adjuntos/...` (público, la clave del objeto es el secreto). No se escribe nada de la base desde la app (el ingreso solo crea códigos/sesiones en el servidor).
@@ -127,7 +127,7 @@ Solo Android (`minSdk 24`, `targetSdk 36`). Edge-to-edge activado; los insets se
 No aplica — opera sobre los datos reales del tablero de `reqdiseno.com` (solo lectura).
 
 ## Versión
-1.1.0 — ingreso con código de 6 dígitos por correo, lista y avisos por persona, cerrar sesión. 1.0.2 — ícono recoloreado a `#003AC1` para combinar con Fondo/Tempo/VaultSync.
+1.1.1 — el tablero agrupa por mes de entrega y no de registro. 1.1.0 — ingreso con código de 6 dígitos por correo, lista y avisos por persona, cerrar sesión. 1.0.2 — ícono recoloreado a `#003AC1` para combinar con Fondo/Tempo/VaultSync.
 
 ## Snapshots
 - Ninguno (proyecto nuevo, cerrado en su primera semana).
@@ -136,6 +136,7 @@ No aplica — opera sobre los datos reales del tablero de `reqdiseno.com` (solo 
 Carpeta: `E:\DESCARGAS\PROYECTOS VS\✅ Requerimientos\app`. Para tocar código: `cd project && npm install && npm run tsc && npm run lint` (borrar `node_modules` al terminar si no se necesita). Para publicar una versión: subir `version` en `project/package.json`, `npm install --package-lock-only`, agregar la entrada a `src/lib/novedades.ts`, commit + `git tag vX.Y.Z` + `git push origin main --tags` → CI compila el APK firmado y lo publica en Releases; los celulares con la app se actualizan solos al abrirla. El keystore vive en `secretos/` (gitignored) y en GitHub Secrets; backup en `#Documentations/Claude Code Backup/env-backups/requerimientos-app.7z`. No hay dev server que matar (build solo en CI).
 
 ## Cambios
+- 2026-10-12 — **(v1.1.1) Tablero agrupado por mes de entrega.** `agruparPorMes` (`src/lib/agrupar.ts`) usa `fechaEntrega` en lugar de `fechaPedido`, igual que la web (los pedidos de septiembre con entrega en octubre pasan a "Octubre"). Entrada nueva en `NOVEDADES` y `version` 1.1.1 en `package.json`/lock. Tag `v1.1.1`; el CI compiló el APK (~12 min por caché de Gradle fría) y publicó el Release. Verificado por el usuario en el teléfono. El APK de la raíz de `app/` sigue siendo el de v1.1.0: la copia de la v1.1.1 no se bajó (no hace falta, la auto-actualización lee el Release de GitHub).
 - 2026-09-26 — **(v1.1.0) Ingreso por código y lista por persona.** Nuevo `LoginScreen` (correo → código de 6 dígitos en 6 casillas), `sesionStore`, `api/acceso.ts`, `services/sesion.ts`; `api/pedidos.ts` y `fcmRegistro.ts` mandan `Authorization: Bearer`; 401 → se limpia la sesión y vuelve al ingreso; `RootNavigator` muestra `Login` o el stack normal, y el deep-link del push espera a que haya sesión; Ajustes con "Cerrar sesión"; el título del tablero incluye el nombre de la persona. `Pedido` gana `asignadoA`. Entrada nueva en `NOVEDADES`. Backend en la web (personas, `/api/app/*`, filtro por persona). Tag `v1.1.0`, CI compiló el APK y publicó el Release. La app sigue siendo solo lectura. `tsc` y `eslint` limpios (no se puede ejecutar en la PC: sin Android SDK; verificada en el teléfono del usuario).
 - 2026-09-23 — **Papelera de 24 h en la web (sin cambios en la app).** Los requerimientos eliminados en la web pasan 24 h en una papelera y `GET /api/pedidos[/id]` ya no los devuelve, así que desaparecen del tablero de la app solos; si se restauran, vuelven a aparecer. No requiere release.
 - 2026-09-23 — **Auditoría de cierre.** Eliminado código muerto: `UNIDADES_NEGOCIO`/`TIPOS`/`SOLICITANTES` (sin uso y ya obsoletos, esas listas ahora se editan en el `/admin` de la web), `recortar` (`formato.ts`) y `R` (`theme.ts`). `tsc --noEmit` y `eslint` limpios. Sin cambio funcional ni versión nueva (no requiere release; los cambios entran en el próximo build).
