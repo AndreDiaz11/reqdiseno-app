@@ -5,6 +5,12 @@ export interface Novedad {
 
 export const NOVEDADES: Novedad[] = [
   {
+    version: '1.1.1',
+    cambios: [
+      'Los requerimientos ahora se agrupan por el mes de su fecha de entrega, no por el mes en que se registraron.',
+    ],
+  },
+  {
     version: '1.1.0',
     cambios: [
       'Ahora ingresas con tu correo: te llega un código de 6 dígitos que vence en 15 minutos.',

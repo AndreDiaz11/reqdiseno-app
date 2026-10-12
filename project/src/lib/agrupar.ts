@@ -4,7 +4,8 @@ import { claveMes, etiquetaMes } from './formato';
 export function agruparPorMes(pedidos: Pedido[]): GrupoMes[] {
   const mapa = new Map<string, Pedido[]>();
   for (const p of pedidos) {
-    const clave = claveMes(p.fechaPedido);
+    // el mes de un requerimiento es el de su entrega, no el de su registro
+    const clave = claveMes(p.fechaEntrega);
     const lista = mapa.get(clave);
     if (lista) lista.push(p);
     else mapa.set(clave, [p]);
