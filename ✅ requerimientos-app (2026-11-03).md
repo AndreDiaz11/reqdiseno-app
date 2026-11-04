@@ -97,8 +97,6 @@ Sí, vía GitHub Releases — repo `AndreDiaz11/reqdiseno-app`. `updateChecker.t
 Sí — popup tipo WhatsApp una sola vez tras cada actualización (`NovedadesDialog`, `src/lib/novedades.ts`). La app se comparte con el equipo de diseño. El texto de cada versión se agrega a `NOVEDADES` en `novedades.ts` (redactado para el usuario final, no el técnico).
 
 ## Despliegue
-**Compilados:** el `.apk` se guarda en `E:\DESCARGAS\PROYECTOS VS\Compilados\`, nunca dentro de este proyecto.
-
 Repo **público** con los 4 secrets de firma cargados. Releases `v1.0.0`, `v1.0.1`, `v1.0.2` y `v1.1.0` publicados por tag. **La v1.0.x ya no carga datos** (el listado exige sesión): hay que actualizar a 1.1.0. Distribución: **APK directo** entre el equipo de diseño (no Play Store por ahora — pendiente de decidir en una etapa de despliegue futura); de la v1.0.0 en adelante las actualizaciones llegan solas por el chequeo de Releases. El backend (Worker de `reqdiseno.com`) ya está en producción con las rutas `/api/app/{codigo,verificar,salir}`, `/api/fcm/{registrar,baja}` y el envío FCM por persona.
 
 ## Claves secretas
